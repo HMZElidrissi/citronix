@@ -2,7 +2,6 @@ package ma.hmzelidrissi.citronix.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ma.hmzelidrissi.citronix.enums.Saison;
 
 import java.time.LocalDate;
 

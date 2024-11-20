@@ -1,10 +1,8 @@
 package ma.hmzelidrissi.citronix.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
-import ma.hmzelidrissi.citronix.enums.ArbreStatus;
-
 import java.time.LocalDate;
+import lombok.*;
 
 @Entity
 @Table(name = "arbres")
@@ -14,20 +12,20 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Arbre {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", nullable = false)
+  private Long id;
 
-    @Column(name = "nom", nullable = false)
-    private String nom;
+  @Column(name = "nom", nullable = false)
+  private String nom;
 
-    @Column(name = "date_plantation", nullable = false)
-    private LocalDate datePlantation;
+  @Column(name = "date_plantation", nullable = false)
+  private LocalDate datePlantation;
 
-    @ManyToOne
-    @JoinColumn(name = "champ_id", nullable = false)
-    private ma.hmzelidrissi.citronix.entities.Champ champ;
+  @ManyToOne
+  @JoinColumn(name = "champ_id", nullable = false)
+  private Champ champ;
 
-    private ArbreStatus status;
+  private ArbreStatus status;
 }

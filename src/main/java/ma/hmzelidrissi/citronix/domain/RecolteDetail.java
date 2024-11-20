@@ -21,7 +21,7 @@ public class RecolteDetail {
 
   @ManyToOne
   @JoinColumn(name = "recolte_id", nullable = false)
-  private ma.hmzelidrissi.citronix.entities.Recolte recolte;
+  private Recolte recolte;
 
   @ManyToOne
   @JoinColumn(name = "arbre_id", nullable = false)
