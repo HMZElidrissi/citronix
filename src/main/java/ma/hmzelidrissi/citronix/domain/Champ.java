@@ -8,6 +8,7 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Champ {
@@ -22,11 +23,8 @@ public class Champ {
   @Column(name = "superficie", nullable = false)
   private Double superficie;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "ferme_id", nullable = false)
+  @ToString.Exclude
   private Ferme ferme;
-
-  //    @ManyToOne
-  //    @JoinColumn(name = "culture_id", nullable = false)
-  //    private Culture culture;
 }
