@@ -1,8 +1,8 @@
-package ma.hmzelidrissi.citronix.enums;
+package ma.hmzelidrissi.citronix.domain;
 
 public enum Saison {
-    HIVER,
-    PRINTEMPS,
-    ETE,
-    AUTOMNE
+  HIVER,
+  PRINTEMPS,
+  ETE,
+  AUTOMNE
 }

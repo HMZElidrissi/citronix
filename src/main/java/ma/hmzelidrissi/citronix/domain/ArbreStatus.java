@@ -1,4 +1,4 @@
-package ma.hmzelidrissi.citronix.enums;
+package ma.hmzelidrissi.citronix.domain;
 
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package ma.hmzelidrissi.citronix.entities;
+package ma.hmzelidrissi.citronix.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,24 +13,24 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Vente {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", nullable = false)
+  private Long id;
 
-    @Column(name = "date_vente", nullable = false)
-    private LocalDate dateVente;
+  @Column(name = "date_vente", nullable = false)
+  private LocalDate dateVente;
 
-    @Column(name = "quantite", nullable = false)
-    private Double quantite;
+  @Column(name = "quantite", nullable = false)
+  private Double quantite;
 
-    @Column(name = "prix_unitaire", nullable = false)
-    private Double prix_unitaire;
+  @Column(name = "prix_unitaire", nullable = false)
+  private Double prix_unitaire;
 
-    @ManyToOne
-    @JoinColumn(name = "recolte_id", nullable = false)
-    private Recolte recolte;
+  @ManyToOne
+  @JoinColumn(name = "recolte_id", nullable = false)
+  private Recolte recolte;
 
-    @Column(name = "client", nullable = false)
-    private String client;
+  @Column(name = "client", nullable = false)
+  private String client;
 }

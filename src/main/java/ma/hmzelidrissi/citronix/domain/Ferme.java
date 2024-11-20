@@ -1,4 +1,4 @@
-package ma.hmzelidrissi.citronix.entities;
+package ma.hmzelidrissi.citronix.domain;
 
 import jakarta.persistence.*;
 import lombok.*;

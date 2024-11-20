@@ -1,4 +1,4 @@
-package ma.hmzelidrissi.citronix.entities;
+package ma.hmzelidrissi.citronix.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +24,7 @@ public class Champ {
 
     @ManyToOne
     @JoinColumn(name = "ferme_id", nullable = false)
-    private Ferme ferme;
+    private ma.hmzelidrissi.citronix.entities.Ferme ferme;
 
 //    @ManyToOne
 //    @JoinColumn(name = "culture_id", nullable = false)
