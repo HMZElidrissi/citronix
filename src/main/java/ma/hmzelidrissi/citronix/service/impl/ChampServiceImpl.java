@@ -71,6 +71,6 @@ public class ChampServiceImpl implements ChampService {
 
   @Override
   public List<ChampResponseDTO> getChampsByFerme(Long fermeId) {
-    return champRepository.findByFerme_Id(fermeId).stream().map(champMapper::toDTO).toList();
+    return champRepository.findByFermeId(fermeId).stream().map(champMapper::toDTO).toList();
   }
 }

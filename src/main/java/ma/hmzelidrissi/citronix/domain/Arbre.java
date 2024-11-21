@@ -2,6 +2,8 @@ package ma.hmzelidrissi.citronix.domain;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.Period;
+
 import lombok.*;
 
 @Entity
@@ -28,4 +30,8 @@ public class Arbre {
   private Champ champ;
 
   private ArbreStatus status;
+
+  public int calculateAge() {
+    return Period.between(this.getDatePlantation(), java.time.LocalDate.now()).getYears();
+  }
 }

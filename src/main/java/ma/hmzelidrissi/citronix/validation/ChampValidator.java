@@ -3,7 +3,7 @@ package ma.hmzelidrissi.citronix.validation;
 import ma.hmzelidrissi.citronix.domain.Ferme;
 import ma.hmzelidrissi.citronix.dto.request.ChampRequestDTO;
 import ma.hmzelidrissi.citronix.exception.ResourceNotFoundException;
-import ma.hmzelidrissi.citronix.exception.SuperficieException;
+import ma.hmzelidrissi.citronix.exception.ValidationException;
 import ma.hmzelidrissi.citronix.repository.ChampRepository;
 import ma.hmzelidrissi.citronix.repository.FermeRepository;
 
@@ -26,17 +26,18 @@ public class ChampValidator {
             .orElseThrow(() -> new ResourceNotFoundException("Ferme", dto.fermeId()));
 
     if (dto.superficie() > ferme.getSuperficie() / 2) {
-      throw new SuperficieException(
+      throw new ValidationException(
           "Aucun champ ne peut dépasser 50% de la superficie totale de la ferme");
     }
 
     if (dto.superficie() > (ferme.getSuperficie() - ferme.getSumSuperficieChamps())) {
-      throw new SuperficieException(
+      throw new ValidationException(
           "La somme des superficies des champs ne peut pas dépasser la superficie totale de la ferme");
     }
-    Double nbrChamps = champRepository.countByFerme_Id(dto.fermeId());
+
+    Double nbrChamps = champRepository.countByFermeId(dto.fermeId());
     if (nbrChamps >= 10) {
-      throw new SuperficieException("Une ferme ne peut pas contenir plus de 10 champs");
+      throw new ValidationException("Une ferme ne peut pas contenir plus de 10 champs");
     }
   }
 }
