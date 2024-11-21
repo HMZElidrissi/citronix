@@ -11,19 +11,18 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RecolteDetail {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", nullable = false)
-  private Long id;
+  @EmbeddedId private RecolteDetailId id;
 
   @Column(name = "quantite", nullable = false)
   private Double quantite;
 
   @ManyToOne
-  @JoinColumn(name = "recolte_id", nullable = false)
+  @MapsId("recolteId")
+  @JoinColumn(name = "recolte_id")
   private Recolte recolte;
 
   @ManyToOne
-  @JoinColumn(name = "arbre_id", nullable = false)
+  @MapsId("arbreId")
+  @JoinColumn(name = "arbre_id")
   private Arbre arbre;
 }
