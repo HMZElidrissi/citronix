@@ -2,22 +2,22 @@ spring:
   application:
     name: citronix
   datasource:
-        url: jdbc:postgresql://localhost:5432/citronix
-        username: hamza
-        password: hamza
-        driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/citronix
+    username: hamza
+    password: hamza
+    driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
   devtools:
-      restart:
-        enabled: true
-      livereload:
-        enabled: true
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
 
 server:
   tomcat:

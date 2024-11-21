@@ -5,4 +5,8 @@ import lombok.Builder;
 
 @Builder
 public record FermeResponseDTO(
-    String nom, String localisation, Double superficie, LocalDate dateCreation) {}
+    String nom,
+    String localisation,
+    Double superficie,
+    Double sumSuperficieChamps,
+    LocalDate dateCreation) {}
