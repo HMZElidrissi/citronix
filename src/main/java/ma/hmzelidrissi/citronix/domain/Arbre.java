@@ -3,7 +3,6 @@ package ma.hmzelidrissi.citronix.domain;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.Period;
-
 import lombok.*;
 
 @Entity
@@ -29,6 +28,7 @@ public class Arbre {
   @JoinColumn(name = "champ_id", nullable = false)
   private Champ champ;
 
+  @Enumerated(EnumType.STRING)
   private ArbreStatus status;
 
   public int calculateAge() {

@@ -9,8 +9,10 @@ import org.mapstruct.*;
     componentModel = "spring",
     uses = {RecolteDetailMapper.class})
 public interface RecolteMapper {
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "quantiteTotale", ignore = true)
+  @Mapping(target = "recolteDetails", ignore = true)
   Recolte toEntity(RecolteRequestDTO dto);
 
   @Mapping(target = "details", source = "recolteDetails")

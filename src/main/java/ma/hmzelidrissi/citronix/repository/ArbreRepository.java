@@ -8,4 +8,6 @@ public interface ArbreRepository extends JpaRepository<Arbre, Long> {
   long countByChampId(Long champId);
 
   List<Arbre> findByChampId(Long champId);
+
+  boolean existsByIdIn(List<Long> ids);
 }

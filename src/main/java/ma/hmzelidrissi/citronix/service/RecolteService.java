@@ -1,6 +1,7 @@
 package ma.hmzelidrissi.citronix.service;
 
 import ma.hmzelidrissi.citronix.domain.Saison;
+import ma.hmzelidrissi.citronix.dto.request.RecolteDetailRequestDTO;
 import ma.hmzelidrissi.citronix.dto.request.RecolteRequestDTO;
 import ma.hmzelidrissi.citronix.dto.response.RecolteResponseDTO;
 import java.util.List;

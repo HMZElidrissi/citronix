@@ -12,6 +12,7 @@ import org.mapstruct.Named;
 public interface VenteMapper {
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "recolte", source = "recolteId", qualifiedByName = "recolteIdToRecolte")
+  @Mapping(target = "prix_unitaire", source = "prixUnitaire")
   Vente toEntity(VenteRequestDTO dto);
 
   @Named("recolteIdToRecolte")
@@ -21,5 +22,6 @@ public interface VenteMapper {
 
   @Mapping(target = "revenu", expression = "java(vente.getQuantite() * vente.getPrix_unitaire())")
   @Mapping(target = "recolteId", source = "recolte.id")
+  @Mapping(target = "prixUnitaire", source = "prix_unitaire")
   VenteResponseDTO toDTO(Vente vente);
 }

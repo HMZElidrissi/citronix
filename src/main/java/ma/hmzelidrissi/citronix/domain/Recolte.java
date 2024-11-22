@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "recoltes")
@@ -19,7 +20,7 @@ public class Recolte {
   @Column(name = "id", nullable = false)
   private Long id;
 
-  @Column(name = "quantite_totale", nullable = false)
+  @Column(name = "quantite_totale")
   private Double quantiteTotale;
 
   @Column(name = "date_recolte", nullable = false)
@@ -30,5 +31,5 @@ public class Recolte {
   private Saison saison;
 
   @OneToMany(mappedBy = "recolte", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<RecolteDetail> recolteDetails;
+  private Set<RecolteDetail> recolteDetails;
 }

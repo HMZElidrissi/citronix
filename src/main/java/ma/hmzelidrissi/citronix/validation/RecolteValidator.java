@@ -1,21 +1,18 @@
 package ma.hmzelidrissi.citronix.validation;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import ma.hmzelidrissi.citronix.dto.request.RecolteDetailRequestDTO;
-import org.springframework.stereotype.Component;
-
 import lombok.RequiredArgsConstructor;
 import ma.hmzelidrissi.citronix.domain.Arbre;
-import ma.hmzelidrissi.citronix.domain.Saison;
+import ma.hmzelidrissi.citronix.domain.Champ;
+import ma.hmzelidrissi.citronix.domain.Recolte;
+import ma.hmzelidrissi.citronix.dto.request.RecolteDetailRequestDTO;
 import ma.hmzelidrissi.citronix.dto.request.RecolteRequestDTO;
 import ma.hmzelidrissi.citronix.exception.ValidationException;
 import ma.hmzelidrissi.citronix.repository.ArbreRepository;
 import ma.hmzelidrissi.citronix.repository.RecolteRepository;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -24,60 +21,39 @@ public class RecolteValidator {
   private final ArbreRepository arbreRepository;
 
   public void validate(RecolteRequestDTO request) {
-    validateUniqueSaisonPerYear(request.dateRecolte(), request.saison());
-    validateArbres(request);
-    validateQuantities(request);
+    validateOneRecoltePerSaison(request);
+
+    // Verifier qu'un seul récolte par saison
+    validateRecolteDetails(request.details());
   }
 
-  private void validateUniqueSaisonPerYear(LocalDate dateRecolte, Saison saison) {
-    if (recolteRepository.existsByDateRecolteYearAndSaison(dateRecolte.getYear(), saison)) {
-      throw new ValidationException(
-          String.format(
-              "Une récolte existe déjà pour la saison %s de l'année %d",
-              saison, dateRecolte.getYear()));
-    }
-  }
-
-  private void validateArbres(RecolteRequestDTO request) {
+  private void validateRecolteDetails(Set<RecolteDetailRequestDTO> details) {
+    // Verfier l'existence des arbres
     Set<Long> arbreIds =
-        request.details().stream()
-            .map(RecolteDetailRequestDTO::arbreId)
-            .collect(Collectors.toSet());
-
-    List<Arbre> arbres = arbreRepository.findAllById(arbreIds);
-
-    if (arbres.size() != arbreIds.size()) {
-      throw new ValidationException("Certains arbres spécifiés n'existent pas");
+        details.stream().map(RecolteDetailRequestDTO::arbreId).collect(Collectors.toSet());
+    if (arbreIds.size() != details.size()) {
+      throw new ValidationException("Les arbres doivent être uniques");
+    }
+    if (!arbreRepository.existsByIdIn(arbreIds.stream().toList())) {
+      throw new ValidationException("Les arbres n'existent pas");
     }
 
-    arbres.forEach(
-        arbre -> {
-          int age = Period.between(arbre.getDatePlantation(), request.dateRecolte()).getYears();
-          if (age > 20) {
-            throw new ValidationException(
-                String.format(
-                    "L'arbre %s a dépassé sa durée de vie productive (20 ans)", arbre.getNom()));
-          }
-        });
+    // Chaque champ ne peut être associé qu'à une seule récolte par saison
+    List<Long> champsIds =
+        arbreRepository.findAllById(arbreIds).stream()
+            .map(Arbre::getChamp)
+            .map(Champ::getId)
+            .toList();
+    if (champsIds.size() > 2) {
+      throw new ValidationException(
+          "Chaque champ ne peut être associé qu'à une seule récolte par saison");
+    }
   }
 
-  private void validateQuantities(RecolteRequestDTO request) {
-    request
-        .details()
-        .forEach(
-            detail -> {
-              Arbre arbre =
-                  arbreRepository
-                      .findById(detail.arbreId())
-                      .orElseThrow(() -> new ValidationException("Arbre non trouvé"));
-
-              double maxProductionParSaison = arbre.getStatus().getProductionParSaison();
-              if (detail.quantite() > maxProductionParSaison) {
-                throw new ValidationException(
-                    String.format(
-                        "La quantité récoltée (%f) dépasse la production maximale par saison (%f) pour l'arbre %s",
-                        detail.quantite(), maxProductionParSaison, arbre.getNom()));
-              }
-            });
+  private void validateOneRecoltePerSaison(RecolteRequestDTO request) {
+    if (recolteRepository.existsByDateRecolteYearAndSaison(
+        request.dateRecolte().getYear(), request.saison())) {
+      throw new ValidationException("Un seul récolte par saison est autorisé");
+    }
   }
 }
