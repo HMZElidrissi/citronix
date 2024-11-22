@@ -1,5 +1,14 @@
 package ma.hmzelidrissi.citronix.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import ma.hmzelidrissi.citronix.criteria.FermeSearchCriteria;
+import ma.hmzelidrissi.citronix.criteria.FermeSpecificationBuilder;
 import ma.hmzelidrissi.citronix.domain.Ferme;
 import ma.hmzelidrissi.citronix.dto.request.FermeRequestDTO;
 import ma.hmzelidrissi.citronix.dto.response.FermeResponseDTO;
@@ -7,174 +16,135 @@ import ma.hmzelidrissi.citronix.exception.ResourceNotFoundException;
 import ma.hmzelidrissi.citronix.mapper.FermeMapper;
 import ma.hmzelidrissi.citronix.repository.FermeRepository;
 import ma.hmzelidrissi.citronix.service.impl.FermeServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 /**
  * Test class for ma.hmzelidrissi.citronix.service.impl.FermeServiceImpl.
  *
  * @author hmzelidrissi
  * @version 1.0
- * @see ma.hmzelidrissi.citronix.service.impl.FermeServiceImpl
+ * @see ma.hmzelidrissi.citronix.service.impl.FermeServiceImpl why testing an implementation rather
+ *     than an interface? see
+ *     https://stackoverflow.com/questions/10937763/unit-under-test-impl-or-interface
  */
 @ExtendWith(MockitoExtension.class)
 class FermeServiceImplTest {
+  @Mock private FermeRepository fermeRepository;
+  @Mock private FermeMapper fermeMapper;
+  @Mock private FermeSpecificationBuilder specificationBuilder;
+  @InjectMocks private FermeServiceImpl fermeService;
 
-    @Mock
-    private FermeRepository fermeRepository;
+  @Test
+  void createFerme_Success() {
+    // Arrange
+    FermeRequestDTO requestDTO =
+        new FermeRequestDTO("Ferme 1", "Localisation 1", 10000.0, LocalDate.now());
+    Ferme ferme = Ferme.builder().nom("Ferme 1").superficie(10000.0).build();
+    FermeResponseDTO expectedResponse =
+        FermeResponseDTO.builder().nom("Ferme 1").superficie(10000.0).build();
 
-    @Mock
-    private FermeMapper fermeMapper;
+    when(fermeMapper.toEntity(requestDTO)).thenReturn(ferme);
+    when(fermeRepository.save(ferme)).thenReturn(ferme);
+    when(fermeMapper.toDTO(ferme)).thenReturn(expectedResponse);
 
-    @InjectMocks
-    private FermeServiceImpl fermeService;
+    // Act
+    FermeResponseDTO result = fermeService.createFerme(requestDTO);
 
-    private Ferme ferme;
-    private FermeRequestDTO requestDTO;
-    private FermeResponseDTO responseDTO;
+    // Assert
+    assertThat(result).isEqualTo(expectedResponse);
+    verify(fermeRepository).save(ferme);
+  }
 
-    @BeforeEach
-    void setUp() {
-        ferme = Ferme.builder()
-                .id(1L)
-                .nom("Test Ferme")
-                .localisation("Test Location")
-                .superficie(10000.0)
-                .dateCreation(LocalDate.now())
-                .build();
+  @Test
+  void updateFerme_WhenFermeExists_Success() {
+    // Arrange
+    Long id = 1L;
+    FermeRequestDTO requestDTO =
+        new FermeRequestDTO("Updated Ferme", "Localisation 1", 20000.0, LocalDate.now());
+    Ferme existingFerme = Ferme.builder().id(id).nom("Old Ferme").superficie(10000.0).build();
+    Ferme updatedFerme = Ferme.builder().id(id).nom("Updated Ferme").superficie(20000.0).build();
+    FermeResponseDTO expectedResponse =
+        FermeResponseDTO.builder().nom("Updated Ferme").superficie(20000.0).build();
 
-        requestDTO = new FermeRequestDTO(
-                "Test Ferme",
-                "Test Location",
-                10000.0,
-                LocalDate.now()
-        );
+    when(fermeRepository.findById(id)).thenReturn(Optional.of(existingFerme));
+    when(fermeRepository.save(existingFerme)).thenReturn(updatedFerme);
+    when(fermeMapper.toDTO(updatedFerme)).thenReturn(expectedResponse);
 
-        responseDTO = FermeResponseDTO.builder()
-                .id(1L)
-                .nom("Test Ferme")
-                .localisation("Test Location")
-                .superficie(10000.0)
-                .dateCreation(LocalDate.now())
-                .build();
-    }
+    // Act
+    FermeResponseDTO result = fermeService.updateFerme(id, requestDTO);
 
-    @Test
-    void createFerme_Success() {
-        when(fermeMapper.toEntity(requestDTO)).thenReturn(ferme);
-        when(fermeRepository.save(ferme)).thenReturn(ferme);
-        when(fermeMapper.toDTO(ferme)).thenReturn(responseDTO);
+    // Assert
+    assertThat(result).isEqualTo(expectedResponse);
+    verify(fermeMapper).updateEntityFromDTO(requestDTO, existingFerme);
+  }
 
-        FermeResponseDTO result = fermeService.createFerme(requestDTO);
+  @Test
+  void updateFerme_WhenFermeNotFound_ThrowsException() {
+    // Arrange
+    Long id = 1L;
+    FermeRequestDTO requestDTO =
+        new FermeRequestDTO("Updated Ferme", "Localisation 1", 20000.0, LocalDate.now());
+    when(fermeRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertNotNull(result);
-        assertEquals(responseDTO.nom(), result.nom());
-        assertEquals(responseDTO.superficie(), result.superficie());
+    // Act & Assert
+    assertThrows(ResourceNotFoundException.class, () -> fermeService.updateFerme(id, requestDTO));
+  }
 
-        verify(fermeMapper).toEntity(requestDTO);
-        verify(fermeRepository).save(ferme);
-        verify(fermeMapper).toDTO(ferme);
-    }
+  @Test
+  void deleteFerme_WhenFermeExists_Success() {
+    // Arrange
+    Long id = 1L;
+    when(fermeRepository.existsById(id)).thenReturn(true);
 
-    @Test
-    void updateFerme_Success() {
-        when(fermeRepository.findById(1L)).thenReturn(Optional.of(ferme));
-        when(fermeRepository.save(ferme)).thenReturn(ferme);
-        when(fermeMapper.toDTO(ferme)).thenReturn(responseDTO);
+    // Act
+    fermeService.deleteFerme(id);
 
-        FermeResponseDTO result = fermeService.updateFerme(1L, requestDTO);
+    // Assert
+    verify(fermeRepository).deleteById(id);
+  }
 
-        assertNotNull(result);
-        assertEquals(responseDTO.nom(), result.nom());
-        assertEquals(responseDTO.superficie(), result.superficie());
+  @Test
+  void deleteFerme_WhenFermeNotFound_ThrowsException() {
+    // Arrange
+    Long id = 1L;
+    when(fermeRepository.existsById(id)).thenReturn(false);
 
-        verify(fermeRepository).findById(1L);
-        verify(fermeMapper).updateEntityFromDTO(requestDTO, ferme);
-        verify(fermeRepository).save(ferme);
-    }
+    // Act & Assert
+    assertThrows(ResourceNotFoundException.class, () -> fermeService.deleteFerme(id));
+  }
 
-    @Test
-    void updateFerme_NotFound() {
-        when(fermeRepository.findById(1L)).thenReturn(Optional.empty());
+  @Test
+  void getFermes_Success() {
+    // Arrange
+    FermeSearchCriteria criteria = new FermeSearchCriteria("Test", null, null, null);
+    Pageable pageable = PageRequest.of(0, 10);
+    Specification<Ferme> spec = mock(Specification.class);
+    List<Ferme> fermes =
+        List.of(Ferme.builder().nom("Ferme 1").build(), Ferme.builder().nom("Ferme 2").build());
+    Page<Ferme> fermePage = new PageImpl<>(fermes, pageable, fermes.size());
+    List<FermeResponseDTO> responseDTOs =
+        List.of(
+            FermeResponseDTO.builder().nom("Ferme 1").build(),
+            FermeResponseDTO.builder().nom("Ferme 2").build());
 
-        assertThrows(ResourceNotFoundException.class,
-                () -> fermeService.updateFerme(1L, requestDTO));
+    when(specificationBuilder.build(criteria)).thenReturn(spec);
+    when(fermeRepository.findAll(spec, pageable)).thenReturn(fermePage);
+    when(fermeMapper.toDTO(any(Ferme.class))).thenReturn(responseDTOs.get(0), responseDTOs.get(1));
 
-        verify(fermeRepository).findById(1L);
-        verifyNoMoreInteractions(fermeMapper, fermeRepository);
-    }
+    // Act
+    Page<FermeResponseDTO> result = fermeService.getFermes(criteria, pageable);
 
-    @Test
-    void deleteFerme_Success() {
-        when(fermeRepository.existsById(1L)).thenReturn(true);
-
-        fermeService.deleteFerme(1L);
-
-        verify(fermeRepository).existsById(1L);
-        verify(fermeRepository).deleteById(1L);
-    }
-
-    @Test
-    void deleteFerme_NotFound() {
-        when(fermeRepository.existsById(1L)).thenReturn(false);
-
-        assertThrows(ResourceNotFoundException.class,
-                () -> fermeService.deleteFerme(1L));
-
-        verify(fermeRepository).existsById(1L);
-        verifyNoMoreInteractions(fermeRepository);
-    }
-
-    @Test
-    void getFermeById_Success() {
-        when(fermeRepository.findById(1L)).thenReturn(Optional.of(ferme));
-        when(fermeMapper.toDTO(ferme)).thenReturn(responseDTO);
-
-        FermeResponseDTO result = fermeService.getFermeById(1L);
-
-        assertNotNull(result);
-        assertEquals(responseDTO.nom(), result.nom());
-        assertEquals(responseDTO.superficie(), result.superficie());
-
-        verify(fermeRepository).findById(1L);
-        verify(fermeMapper).toDTO(ferme);
-    }
-
-    @Test
-    void getFermeById_NotFound() {
-        when(fermeRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class,
-                () -> fermeService.getFermeById(1L));
-
-        verify(fermeRepository).findById(1L);
-        verifyNoMoreInteractions(fermeMapper);
-    }
-
-    @Test
-    void getAllFermes_Success() {
-        List<Ferme> fermes = List.of(ferme);
-        when(fermeRepository.findAll()).thenReturn(fermes);
-        when(fermeMapper.toDTO(ferme)).thenReturn(responseDTO);
-
-        List<FermeResponseDTO> results = fermeService.getAllFermes();
-
-        assertNotNull(results);
-        assertEquals(1, results.size());
-        assertEquals(responseDTO.nom(), results.get(0).nom());
-
-        verify(fermeRepository).findAll();
-        verify(fermeMapper).toDTO(ferme);
-    }
+    // Assert
+    assertThat(result.getContent()).hasSize(2);
+    assertThat(result.getContent()).containsExactlyElementsOf(responseDTOs);
+  }
 }
