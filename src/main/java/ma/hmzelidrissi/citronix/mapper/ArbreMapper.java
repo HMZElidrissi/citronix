@@ -21,7 +21,10 @@ public interface ArbreMapper {
   @Mapping(target = "age", expression = "java(arbre.calculateAge())")
   @Mapping(
       target = "productiviteParSaison",
-      expression = "java(arbre.getStatus().getProductionParSaison())")
+      expression = "java(arbre.calculateProductiviteParSaison())")
+  @Mapping(
+      target = "productiviteAnnuelle",
+      expression = "java(arbre.calculateAnnualProductivite())")
   ArbreResponseDTO toDTO(Arbre arbre);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

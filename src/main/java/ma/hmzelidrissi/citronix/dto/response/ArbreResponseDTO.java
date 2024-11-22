@@ -11,4 +11,5 @@ public record ArbreResponseDTO(
     LocalDate datePlantation,
     int age,
     ArbreStatus status,
-    double productiviteParSaison) {}
+    double productiviteParSaison,
+    double productiviteAnnuelle) {}

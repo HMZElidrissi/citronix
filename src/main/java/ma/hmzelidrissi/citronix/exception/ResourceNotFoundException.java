@@ -8,7 +8,7 @@ public class ResourceNotFoundException extends RuntimeException {
   private final Long id;
 
   public ResourceNotFoundException(String entity, Long id) {
-    super(String.format("%s not found with id: %d", entity, id));
+    super(String.format("%s non trouvé avec l'identifiant %d", entity, id));
     this.entity = entity;
     this.id = id;
   }

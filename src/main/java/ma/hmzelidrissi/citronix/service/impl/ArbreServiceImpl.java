@@ -1,7 +1,5 @@
 package ma.hmzelidrissi.citronix.service.impl;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import ma.hmzelidrissi.citronix.domain.Arbre;

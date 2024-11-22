@@ -34,4 +34,12 @@ public class Arbre {
   public int calculateAge() {
     return Period.between(this.getDatePlantation(), java.time.LocalDate.now()).getYears();
   }
+
+  public double calculateProductiviteParSaison() {
+    return this.getStatus().getProductionParSaison();
+  }
+
+  public double calculateAnnualProductivite() {
+    return this.calculateProductiviteParSaison() * 4;
+  }
 }
