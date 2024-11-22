@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ma.hmzelidrissi.citronix.domain.Champ;
 
 public interface ChampRepository extends JpaRepository<Champ, Long> {
-  List<Champ> findByFerme_Id(Long fermeId);
+  List<Champ> findByFermeId(Long fermeId);
 
-  Double countByFerme_Id(Long fermeId);
+  Double countByFermeId(Long fermeId);
 }
