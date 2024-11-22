@@ -37,7 +37,7 @@ import org.springframework.data.jpa.domain.Specification;
  *     https://stackoverflow.com/questions/10937763/unit-under-test-impl-or-interface
  */
 @ExtendWith(MockitoExtension.class)
-class FermeServiceImplTest {
+class FermeServiceTest {
   @Mock private FermeRepository fermeRepository;
   @Mock private FermeMapper fermeMapper;
   @Mock private FermeSpecificationBuilder specificationBuilder;
