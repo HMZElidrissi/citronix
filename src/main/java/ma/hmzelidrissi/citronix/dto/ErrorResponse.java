@@ -1,19 +1,17 @@
-package ma.hmzelidrissi.citronix.dtos;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+package ma.hmzelidrissi.citronix.dto;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
+
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ErrorResponse {
-    private LocalDateTime timestamp;
-    private int status;
-    private String error;
-    private Map<String, String> errors;
-    private String path;
-}
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public record ErrorResponse(
+    LocalDateTime timestamp,
+    int status,
+    String error,
+    String message,
+    Map<String, String> errors,
+    String path) {}
