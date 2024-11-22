@@ -12,8 +12,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 @RestController
 @RequestMapping("/api/v1/fermes")
@@ -51,15 +53,28 @@ public class FermeController {
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "nom") String sortBy,
       @RequestParam(defaultValue = "asc") String sortDirection) {
+
     Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
     Pageable pageable = PageRequest.of(page, size, sort);
+
+    LocalDate parsedDate = null;
+    if (dateCreation != null && !dateCreation.trim().isEmpty()) {
+      try {
+        parsedDate = LocalDate.parse(dateCreation);
+      } catch (DateTimeParseException e) {
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, "Invalid date format. Please use ISO format (YYYY-MM-DD)");
+      }
+    }
+
     FermeSearchCriteria criteria =
         FermeSearchCriteria.builder()
             .nom(nom)
             .localisation(localisation)
             .superficie(superficie)
-            .dateCreation(LocalDate.parse(dateCreation))
+            .dateCreation(parsedDate)
             .build();
+
     return fermeService.getFermes(criteria, pageable);
   }
 }
