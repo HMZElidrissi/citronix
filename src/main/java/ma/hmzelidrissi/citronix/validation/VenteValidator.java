@@ -20,7 +20,7 @@ public class VenteValidator {
             .findById(request.recolteId())
             .orElseThrow(() -> new ValidationException("Récolte non trouvée"));
 
-    double totalVendu = venteRepository.sumQuantiteByRecolteId(request.recolteId());
+    double totalVendu = venteRepository.countByRecolteId(request.recolteId());
     if (totalVendu + request.quantite() > recolte.getQuantiteTotale()) {
       throw new ValidationException("Quantité demandée dépasse le stock disponible");
     }
