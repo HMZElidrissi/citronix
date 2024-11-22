@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "recoltes")
@@ -27,4 +28,7 @@ public class Recolte {
   @Enumerated(EnumType.STRING)
   @Column(name = "saision", nullable = false)
   private Saison saison;
+
+  @OneToMany(mappedBy = "recolte", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<RecolteDetail> recolteDetails;
 }
